@@ -23,7 +23,7 @@ const PAGE_PROP = ['data']
 // page 原生方法
 //TODO onShareAppMessage  在mixin中是不起作用的 这个方法必须定以在page里面 才有作用，但是事件可以触发
 const PAGE_EVENT = ['onLoad', 'onReady', 'onShow', 'onHide', 'onUnload', 'onPullDownRefresh', 'onReachBottom', 'onShareAppMessage', 'onPageScroll', 'onTabItemTap']
-export const getMixins = (mixins = []) => {
+const getMixins = (mixins = []) => {
   let ret = {}
   if (!Array.isArray(mixins)) {
     console.error(`mixins 类型必须为数组！`)
@@ -57,7 +57,8 @@ export const getMixins = (mixins = []) => {
   return ret
 }
 // 合并mixin到page
-export const mergeMixinToPage = (pageConf = {}, mixin = {}) => {
+const mergeMixinToPage = (pageConf = {}) => {
+  let mixin = getMixins(pageConf.mixins || [])
   Object.keys(mixin).forEach(key => {
     if (PAGE_PROP.includes(key)) {
       //属性
@@ -84,17 +85,13 @@ export const mergeMixinToPage = (pageConf = {}, mixin = {}) => {
 
 WEAPPUP.install = () => {
   // 替换Page实例
-  Page = function (pageConfig) {
-    let mixins = getMixins(pageConfig.mixins || [])
-    let options = mergeMixinToPage(pageConfig, mixins)
-    OLD_PAGE.call(this, options)
+  Page = function (pageConf) {
+    OLD_PAGE.call(this, mergeMixinToPage(pageConf))
   }
 }
 // 代理Page实例
-WEAPPUP.Page = (pageConfig) => {
-  let mixins = getMixins(pageConfig.mixins || [])
-  let options = mergeMixinToPage(pageConfig, mixins)
-  return OLD_PAGE(options)
+WEAPPUP.Page = (pageConf) => {
+  return OLD_PAGE(mergeMixinToPage(pageConf))
 }
 
 export default WEAPPUP

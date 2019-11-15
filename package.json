@@ -1,0 +1,25 @@
+{
+  "name": "weapp-up",
+  "version": "0.0.1",
+  "description": "Weapp native development enhancement library",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hcsdtk/weapp-up.git"
+  },
+  "keywords": [
+    "Weapp"
+  ],
+  "author": "chasen.huang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hcsdtk/weapp-up/issues"
+  },
+  "homepage": "https://github.com/hcsdtk/weapp-up#readme"
+}

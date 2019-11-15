@@ -1,8 +1,8 @@
 {
   "name": "weapp-up",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Weapp native development enhancement library",
-  "main": "lib/index.bundle.js",
+  "main": "lib/index.js",
   "directories": {
     "example": "example"
   },
@@ -16,7 +16,7 @@
   "keywords": [
     "Weapp"
   ],
-  "author": "chasen.huang",
+  "author": "Chasen Huang",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/hcsdtk/weapp-up/issues"

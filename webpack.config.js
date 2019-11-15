@@ -4,12 +4,15 @@ const {
 } = require('clean-webpack-plugin');
 
 module.exports = {
+  mode: 'production',
   entry: {
     index: path.resolve(__dirname, './src/index.js')
   },
   output: {
-    filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'lib')
+    filename: '[name].js',
+    path: path.resolve(__dirname, 'lib'),
+    libraryTarget: 'umd',
+    umdNamedDefine: true
   },
   plugins: [
     new CleanWebpackPlugin()

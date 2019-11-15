@@ -5,9 +5,10 @@
  * 2019-11-07 09:31:33
  * by chasen
  */
-const OLD_APP = App
-const OLD_PAGE = Page
-const OLD_COMPONENT = Component
+const fn = () => {}
+const OLD_APP = App || fn
+const OLD_PAGE = Page || fn
+const OLD_COMPONENT = Component || fn
 
 // namespace
 const WEAPPUP = {}
@@ -81,7 +82,6 @@ export const mergeMixinToPage = (pageConf = {}, mixin = {}) => {
   })
   return pageConf
 }
-
 
 WEAPPUP.install = () => {
   // 替换Page实例

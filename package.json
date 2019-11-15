@@ -2,7 +2,7 @@
   "name": "weapp-up",
   "version": "0.0.1",
   "description": "Weapp native development enhancement library",
-  "main": "index.js",
+  "main": "lib/index.bundle.js",
   "directories": {
     "example": "example"
   },

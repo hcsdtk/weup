@@ -73,6 +73,7 @@ jspm_packages
 .ideas
 dist
 dev
+package-lock.json
 
 # weapp
 *project.config.json

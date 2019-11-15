@@ -1,0 +1,14 @@
+{
+  "name": "weapp-up-example",
+  "version": "1.0.0",
+  "description": "weapp-up-example",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chasen Huang",
+  "license": "ISC",
+  "dependencies": {
+    "weapp-up": "0.0.2"
+  }
+}

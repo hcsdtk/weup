@@ -9,7 +9,6 @@ const fn = () => {}
 const OLD_APP = App || fn
 const OLD_PAGE = Page || fn
 const OLD_COMPONENT = Component || fn
-
 // namespace
 const WEAPPUP = {}
 /**

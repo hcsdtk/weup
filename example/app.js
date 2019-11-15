@@ -1,4 +1,7 @@
-//app.js
+// 引入weapp-up
+import WeappUp from "weapp-up"
+// 全局安装
+WeappUp.install()
 App({
   onLaunch: function () {
     // 展示本地存储能力

@@ -5,12 +5,22 @@
  * 2019-11-07 09:31:33
  * by chasen
  */
+const lodashClonedepp = require('lodash.clonedeep')
+const lodashGet = require('lodash.get')
+const lodashSet = require('lodash.set')
 const fn = () => {}
 const OLD_APP = App || fn
 const OLD_PAGE = Page || fn
 const OLD_COMPONENT = Component || fn
+const isObject = v => v !== null && (typeof v === 'object' || typeof v === 'function')
+const isArray = v => Array.isArray(v)
+const isFunction = v => typeof v === 'function'
 // namespace
 const WEAPPUP = {}
+// use模块
+const USE = {}
+// 全局数据
+const STORE = {}
 /**
  * 获取mixins中的数据
  * 
@@ -19,10 +29,11 @@ const WEAPPUP = {}
  * @param {*} mixins 
  * */
 // page 原生属性
-const PAGE_PROP = ['data']
+const PAGE_PROP = ['data', 'properties', 'options']
 // page 原生方法
 //TODO onShareAppMessage  在mixin中是不起作用的 这个方法必须定以在page里面 才有作用，但是事件可以触发
 const PAGE_EVENT = ['onLoad', 'onReady', 'onShow', 'onHide', 'onUnload', 'onPullDownRefresh', 'onReachBottom', 'onShareAppMessage', 'onPageScroll', 'onTabItemTap']
+
 const getMixins = (mixins = []) => {
   let ret = {}
   if (!Array.isArray(mixins)) {
@@ -56,8 +67,8 @@ const getMixins = (mixins = []) => {
   })
   return ret
 }
-// 合并mixin到page
-const mergeMixinToPage = (pageConf = {}) => {
+// 合并mixin
+const mergeMixin = (pageConf = {}) => {
   let mixin = getMixins(pageConf.mixins || [])
   Object.keys(mixin).forEach(key => {
     if (PAGE_PROP.includes(key)) {
@@ -82,16 +93,70 @@ const mergeMixinToPage = (pageConf = {}) => {
   })
   return pageConf
 }
+// use模块
+WEAPPUP.use = (params) => {
+  if (!params || isArray(params)) {
+    return
+  }
+  if (isFunction(params)) {
+    USE[`$${params.name}`] = params
+  }
+  if (isObject(params)) {
+    Object.keys(params).forEach(key => {
+      USE[`$${key}`] = params[key]
+    })
+  }
+}
+
+WEAPPUP.useStore = (params) => {
+  if (!params || isArray(params) || isFunction(params)) {
+    return
+  }
+  if (isObject(params)) {
+    Object.keys(params).forEach(key => {
+      STORE[`${key}`] = params[key]
+    })
+  }
+}
+// 
+const setUse = (conf, type = 'page') => {
+  let options = conf
+  // 注入use 模块
+  if (type === 'page') {
+    options = mergeMixin(conf)
+    Object.keys(USE).forEach(key => {
+      options[key] = USE[key]
+    })
+  }
+  if (type === 'component') {
+    const {
+      methods = {}
+    } = options
+    // 注入use 模块
+    Object.keys(USE).forEach(key => {
+      methods[key] = USE[key]
+    })
+    options.methods = methods
+  }
+  return options
+}
 
 WEAPPUP.install = () => {
   // 替换Page实例
   Page = function (pageConf) {
-    OLD_PAGE.call(this, mergeMixinToPage(pageConf))
+    OLD_PAGE.call(this, setUse(pageConf))
+  }
+  Component = function (componentConf) {
+    OLD_COMPONENT.call(this, setUse(componentConf, 'component'))
   }
 }
 // 代理Page实例
 WEAPPUP.Page = (pageConf) => {
-  return OLD_PAGE(mergeMixinToPage(pageConf))
+  return OLD_PAGE(setUse(pageConf))
+}
+// 代理Page实例
+WEAPPUP.Component = (componentConf) => {
+  return OLD_PAGE(setUse(componentConf, 'component'))
 }
 
 export default WEAPPUP

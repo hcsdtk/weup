@@ -1,6 +1,6 @@
 {
-  "name": "weapp-up",
-  "version": "0.0.2",
+  "name": "weup",
+  "version": "0.1.0",
   "description": "Weapp native development enhancement library",
   "main": "lib/index.js",
   "directories": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hcsdtk/weapp-up.git"
+    "url": "git+https://github.com/hcsdtk/weup.git"
   },
   "keywords": [
     "Weapp"
@@ -19,9 +19,9 @@
   "author": "Chasen Huang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hcsdtk/weapp-up/issues"
+    "url": "https://github.com/hcsdtk/weup/issues"
   },
-  "homepage": "https://github.com/hcsdtk/weapp-up#readme",
+  "homepage": "https://github.com/hcsdtk/weup#readme",
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",
     "webpack": "^4.41.2",

@@ -16,7 +16,7 @@ const isObject = v => v !== null && (typeof v === 'object' || typeof v === 'func
 const isArray = v => Array.isArray(v)
 const isFunction = v => typeof v === 'function'
 // namespace
-const WEAPPUP = {}
+const WEUP = {}
 // use模块
 const USE = {}
 // 全局store
@@ -115,7 +115,7 @@ const mergeMixin = (pageConf = {}) => {
   return pageConf
 }
 // use模块
-WEAPPUP.use = (params) => {
+WEUP.use = (params) => {
   if (!params || isArray(params)) {
     return
   }
@@ -129,7 +129,7 @@ WEAPPUP.use = (params) => {
   }
 }
 
-WEAPPUP.useStore = useStore
+WEUP.useStore = useStore
 
 // 设置use 和 store模块
 const setUse = (conf, type = 'page') => {
@@ -170,7 +170,7 @@ const setUse = (conf, type = 'page') => {
 
 
 
-WEAPPUP.install = () => {
+WEUP.install = () => {
   // 替换Page实例
   Page = function (pageConf) {
     OLD_PAGE.call(this, setUse(pageConf))
@@ -180,12 +180,12 @@ WEAPPUP.install = () => {
   }
 }
 // 代理Page实例
-WEAPPUP.Page = (pageConf) => {
+WEUP.Page = (pageConf) => {
   return OLD_PAGE(setUse(pageConf))
 }
 // 代理Page实例
-WEAPPUP.Component = (componentConf) => {
+WEUP.Component = (componentConf) => {
   return OLD_PAGE(setUse(componentConf, 'component'))
 }
 
-export default WEAPPUP
+export default WEUP

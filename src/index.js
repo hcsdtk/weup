@@ -19,8 +19,29 @@ const isFunction = v => typeof v === 'function'
 const WEAPPUP = {}
 // use模块
 const USE = {}
-// 全局数据
-const STORE = {}
+// 全局store
+const store = {}
+const useStore = (params = {}) => {
+  if (!params || isArray(params) || isFunction(params)) {
+    return console.warn(`store必须是数据对象`)
+  }
+  if (isObject(params)) {
+    Object.keys(params).forEach(key => {
+      store[`${key}`] = params[key]
+    })
+  }
+}
+const setStore = (params = {}) => {
+  Object.keys(params).forEach(key => {
+    lodashSet(store, key, params[key])
+  })
+}
+export {
+  store,
+  useStore,
+  setStore
+}
+
 /**
  * 获取mixins中的数据
  * 
@@ -108,17 +129,9 @@ WEAPPUP.use = (params) => {
   }
 }
 
-WEAPPUP.useStore = (params) => {
-  if (!params || isArray(params) || isFunction(params)) {
-    return
-  }
-  if (isObject(params)) {
-    Object.keys(params).forEach(key => {
-      STORE[`${key}`] = params[key]
-    })
-  }
-}
-// 
+WEAPPUP.useStore = useStore
+
+// 设置use 和 store模块
 const setUse = (conf, type = 'page') => {
   let options = conf
   // 注入use 模块
@@ -127,6 +140,13 @@ const setUse = (conf, type = 'page') => {
     Object.keys(USE).forEach(key => {
       options[key] = USE[key]
     })
+    const onLoad = options.onLoad
+    options.onLoad = function (e) {
+      this.store = store
+      this.setStore = setStore
+      onLoad && onLoad.call(this, e)
+    }
+
   }
   if (type === 'component') {
     const {
@@ -137,9 +157,18 @@ const setUse = (conf, type = 'page') => {
       methods[key] = USE[key]
     })
     options.methods = methods
+    options.lifetimes = options.lifetimes || {}
+    const created = options.lifetimes.created || options.created
+    options.created = options.lifetimes.created = function () {
+      this.store = store
+      this.setStore = setStore
+      created && created.call(this)
+    }
   }
   return options
 }
+
+
 
 WEAPPUP.install = () => {
   // 替换Page实例

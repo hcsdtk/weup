@@ -2,6 +2,8 @@
 
 如果你打算用，我先肯定你是对微信原生开发很熟练了哈，暂时还没有详细的新手入门教程。
 
+## 安装
+
 ### 开始之前
 
 微信开发者工具打开如下设置(位置麻烦自己找一下)：
@@ -46,4 +48,18 @@ weup.component({
 ```
 
 ### 开始之后
-后面再搞个demo吧，尴尬。
+
+参考一下 example。
+
+## example
+
+```bash
+git clone https://github.com/hcsdtk/weup.git
+
+# 开发者工具-导入项目-example
+
+# 安装
+yarn
+
+# 开发者工具-工具-构建 npm
+```

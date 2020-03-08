@@ -71,10 +71,7 @@ jspm_packages
 
 .editorconfig
 .ideas
-dist
 dev
-package-lock.json
-
 # weapp
 *project.config.json
 .idea

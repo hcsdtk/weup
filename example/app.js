@@ -1,5 +1,5 @@
 // 引入weapp-up
-import weup from "weup"
+import weup from "./utils/index"
 // 全局安装
 weup.install()
 App({

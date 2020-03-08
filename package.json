@@ -1,9 +1,10 @@
 {
   "name": "weup",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Weapp native development enhancement library",
   "main": "lib/index.js",
   "directories": {
+    "lib": "lib",
     "example": "example"
   },
   "scripts": {
@@ -19,7 +20,8 @@
   "author": "Chasen Huang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hcsdtk/weup/issues"
+    "url": "https://github.com/hcsdtk/weup/issues",
+    "email": "hcsdtk@sina.com"
   },
   "homepage": "https://github.com/hcsdtk/weup#readme",
   "devDependencies": {
@@ -30,6 +32,7 @@
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",
+    "lodash.isempty": "^4.4.0",
     "lodash.set": "^4.3.2"
   }
 }

@@ -9,6 +9,8 @@
 - 零入侵
 - Page mixin
 - 全局状态管理
+- bus
+- 工具类
 
 # 快速使用
 
@@ -16,6 +18,8 @@
 
 ```bash
 npm install --save weup
+or
+yarn add weup
 ```
 
 全局引入
@@ -32,14 +36,12 @@ weup.install()
 ```javascript
 // page.js
 import weup from 'weup'
-// 全局安装
 weup.Page({
   onLoad() {}
 })
 
 // component.js
 import weup from 'weup'
-// 全局安装
 weup.Component({
   ready() {}
 })

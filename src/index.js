@@ -5,187 +5,263 @@
  * 2019-11-07 09:31:33
  * by chasen
  */
-const lodashClonedepp = require('lodash.clonedeep')
-const lodashGet = require('lodash.get')
-const lodashSet = require('lodash.set')
-const fn = () => {}
-const OLD_APP = App || fn
-const OLD_PAGE = Page || fn
-const OLD_COMPONENT = Component || fn
-const isObject = v => v !== null && (typeof v === 'object' || typeof v === 'function')
-const isArray = v => Array.isArray(v)
-const isFunction = v => typeof v === 'function'
+/** 
+ * 助手工具
+ * 1、拓展Page实例支持 Mixin。
+ * 2、全局store。
+ * by chasen.huang 
+ */
+import {
+  isObject,
+  isFunction,
+  isArray,
+  isEmpty,
+  throttle,
+  debounce
+} from './util'
 // namespace
-const WEUP = {}
+const weup = {}
 // use模块
-const USE = {}
-// 全局store
-const store = {}
-const useStore = (params = {}) => {
-  if (!params || isArray(params) || isFunction(params)) {
-    return console.warn(`store必须是数据对象`)
+const use = {}
+/**
+ * 全局事件总线，可以全局（跨页面）触发、监听事件。
+ * 全局只有一个 $bus 实例
+ */
+if (!global._hsBus) {
+  global._hsBus = {}
+}
+/**
+ * 暴露一些工具类
+ */
+weup.utils = {
+  isObject,
+  isFunction,
+  isArray,
+  isEmpty,
+  throttle,
+  debounce
+}
+// 全局事件
+weup.bus = {
+  /**
+   * 触发事件
+   */
+  emit(eventName, ...arg) {
+    let cbs = global._hsBus[eventName]
+    if (!cbs) {
+      return false
+    }
+    for (let cb of cbs) {
+      cb.apply(null, arg)
+    }
+  },
+  /**
+   * 监听事件
+   */
+  on(eventName, cb) {
+    global._hsBus[eventName] = global._hsBus[eventName] || []
+    global._hsBus[eventName].push(cb)
+  },
+  /**
+   * 关闭事件
+   */
+  off(eventName, cb) {
+    let cbs = global._hsBus[eventName] || []
+    if (cb) {
+      for (let index = 0; index < cbs.length; ++index) {
+        if (cb === o) {
+          cbs.splice(index, 1)
+          break
+        }
+      }
+    } else {
+      global._hsBus[eventName] = []
+    }
   }
-  if (isObject(params)) {
-    Object.keys(params).forEach(key => {
-      store[`${key}`] = params[key]
-    })
-  }
 }
-const setStore = (params = {}) => {
-  Object.keys(params).forEach(key => {
-    lodashSet(store, key, params[key])
-  })
-}
-export {
-  store,
-  useStore,
-  setStore
-}
-
 /**
  * 获取mixins中的数据
- * 
  * 这里只拓展Page
  * Component组件本身微信就支持类似mixin的behaviors属性
  * @param {*} mixins 
  * */
 // page 原生属性
-const PAGE_PROP = ['data', 'properties', 'options']
+const pageProp = ['data', 'properties', 'options']
 // page 原生方法
-//TODO onShareAppMessage  在mixin中是不起作用的 这个方法必须定以在page里面 才有作用，但是事件可以触发
-const PAGE_EVENT = ['onLoad', 'onReady', 'onShow', 'onHide', 'onUnload', 'onPullDownRefresh', 'onReachBottom', 'onShareAppMessage', 'onPageScroll', 'onTabItemTap']
+// onShareAppMessage  在mixin中是不起作用的 这个方法必须定以在page里面 才有作用，但是事件可以触发
+const pageEvent = ['onLoad', 'onReady', 'onShow', 'onHide', 'onUnload', 'onPullDownRefresh', 'onReachBottom', 'onShareAppMessage', 'onPageScroll', 'onResize', 'onTabItemTap']
 
-const getMixins = (mixins = []) => {
-  let ret = {}
-  if (!Array.isArray(mixins)) {
-    console.error(`mixins 类型必须为数组！`)
-    return {}
-  }
+/**
+ * 合并mixin项
+ * @param {*} origin 
+ * @param {*} next 
+ */
+function merge(...mixins) {
+  let options = {}
   mixins.forEach(mixin => {
     if (Object.prototype.toString.call(mixin) !== '[object Object]') {
       throw new Error('mixin 类型必须为对象！')
     }
-    // 遍历 mixin 
-    for (let [key, value] of Object.entries(mixin)) {
-      if (PAGE_PROP.includes(key)) {
-        //原生属性混入，后mixin优先级高
-        ret[key] = {
-          ...ret[key],
-          ...value
+    Object.keys(mixin).forEach(key => {
+      // 不存在直接赋值
+      if (options[key] === undefined) {
+        options[key] = mixin[key]
+      } else if (pageProp.includes(key)) {
+        //属性合并，后加入为准
+        options[key] = {
+          ...options[key],
+          ...mixin[key]
         }
-      } else if (PAGE_EVENT.includes(key)) {
-        //原生方法混入，后mixin先执行
-        const prevFunc = ret[key]
-        ret[key] = function (...args) {
-          value.call(this, ...args)
-          return prevFunc && prevFunc.call(this, ...args)
+      } else if (pageEvent.includes(key)) {
+        // 合并方法
+        const originFunc = options[key]
+        options[key] = function (...arg) {
+          mixin[key].call(this, ...arg)
+          return originFunc && originFunc.call(this, ...arg)
         }
       } else {
-        // 自定义方法及属性混入
-        ret[key] = value
+        // 后面的覆盖前面
+        options[key] = mixin[key]
       }
-    }
-  })
-  return ret
-}
-// 合并mixin
-const mergeMixin = (pageConf = {}) => {
-  let mixin = getMixins(pageConf.mixins || [])
-  Object.keys(mixin).forEach(key => {
-    if (PAGE_PROP.includes(key)) {
-      //属性
-      pageConf[key] = {
-        ...mixin[key],
-        ...pageConf[key]
-      }
-    } else if (PAGE_EVENT.includes(key)) {
-      // 方法
-      const originFunc = pageConf[key]
-      pageConf[key] = function (...args) {
-        mixin[key].call(this, ...args)
-        return originFunc && originFunc.call(this, ...args)
-      }
-    } else {
-      // 自定义方法及属性混入
-      if (pageConf[key] === undefined) {
-        pageConf[key] = mixin[key]
-      }
-    }
-  })
-  return pageConf
-}
-// use模块
-WEUP.use = (params) => {
-  if (!params || isArray(params)) {
-    return
-  }
-  if (isFunction(params)) {
-    USE[`$${params.name}`] = params
-  }
-  if (isObject(params)) {
-    Object.keys(params).forEach(key => {
-      USE[`$${key}`] = params[key]
     })
-  }
+  })
+  return options
 }
-
-WEUP.useStore = useStore
-
-// 设置use 和 store模块
-const setUse = (conf, type = 'page') => {
+// 后退时间标识
+const backEvent = 'pageBackData'
+// 注册全局页面后退事件
+function regBackEvent(context) {
+  global.id = global.id || 1
+  context.pageid = global.id++;
+  weup.bus.on(backEvent, (id, data) => {
+    if (id == context.pageid) {
+      if (context.onBack) {
+        context.onBack.call(context, data)
+      }
+    }
+  })
+}
+// 后退事件
+function goBack(data, delta) {
+  delta = delta > 0 ? delta : 1
+  if (data !== undefined) {
+    let stack = getCurrentPages()
+    let len = stack.length - delta - 1
+    // 如果后退页面超过栈，回到第一页
+    if (len < -1) {
+      len = 0
+    }
+    // 如果还有页面栈，触发事件
+    if (len >= 0) {
+      weup.bus.emit(backEvent, stack[len].pageid, data)
+    }
+  }
+  wx.navigateBack({
+    delta: delta
+  })
+}
+/**
+ * 合并页面
+ */
+function setPage(conf) {
   let options = conf
-  // 注入use 模块
-  if (type === 'page') {
-    options = mergeMixin(conf)
-    Object.keys(USE).forEach(key => {
-      options[key] = USE[key]
-    })
-    const onLoad = options.onLoad
-    options.onLoad = function (e) {
-      this.store = store
-      this.setStore = setStore
-      onLoad && onLoad.call(this, e)
-    }
-
+  if (conf.mixins && isArray(conf.mixins) && conf.mixins.length) {
+    options = merge(...conf.mixins, conf)
   }
-  if (type === 'component') {
-    const {
-      methods = {}
-    } = options
-    // 注入use 模块
-    Object.keys(USE).forEach(key => {
-      methods[key] = USE[key]
-    })
-    options.methods = methods
-    options.lifetimes = options.lifetimes || {}
-    const created = options.lifetimes.created || options.created
-    options.created = options.lifetimes.created = function () {
-      this.store = store
-      this.setStore = setStore
-      created && created.call(this)
-    }
+  if (!isEmpty(use)) {
+    options = merge(options, use)
+  }
+  const onLoad = options.onLoad
+  options.onLoad = function (e) {
+    this.bus = weup.bus
+    regBackEvent(this)
+    this.goBack = goBack
+    onLoad && onLoad.call(this, e)
   }
   return options
 }
 
-
-
-WEUP.install = () => {
-  // 替换Page实例
-  Page = function (pageConf) {
-    OLD_PAGE.call(this, setUse(pageConf))
+/**
+ * 合并组件
+ */
+function setComponent(conf) {
+  let options = conf
+  const {
+    methods = {}
+  } = options
+  Object.keys(use).forEach(key => {
+    if (pageProp.includes(key)) {
+      options[key] = {
+        ...options[key],
+        ...use[key]
+      }
+    } else if (key !== 'store') {
+      methods[key] = use[key]
+    }
+  })
+  options.methods = methods
+  options.lifetimes = options.lifetimes || {}
+  //created 的时候取不到页面this.route，但是可以挂载一些属性
+  const created = options.lifetimes.created || options.created
+  options.created = options.lifetimes.created = function () {
+    this.bus = weup.bus
+    // 设置store模块
+    if (!isEmpty(use.store)) {
+      this.store = use.store
+    }
+    created && created.call(this)
   }
-  Component = function (componentConf) {
-    OLD_COMPONENT.call(this, setUse(componentConf, 'component'))
+  //  如果是component申明页面，attached会比onLoad先执行，在这里挂载全局事件很OK
+  const attached = options.lifetimes.attached || options.attached
+  options.attached = options.lifetimes.attached = function () {
+    // 如果component存在路由，那就表示是页面
+    if (this.route) {
+      regBackEvent(this)
+      this.goBack = goBack
+    }
+    attached && attached.call(this)
+  }
+  return options
+}
+
+// use模块
+weup.use = (params) => {
+  if (!params || isArray(params)) {
+    return
+  }
+  if (isFunction(params)) {
+    use[`${params.name}`] = params
+    return
+  }
+  if (isObject(params)) {
+    Object.keys(params).forEach(key => {
+      use[`${key}`] = params[key]
+    })
+  }
+}
+// 全局注册
+weup.install = () => {
+  try {
+    const oldPage = Page
+    const oldComponent = Component
+    // 替换Page实例
+    Page = function (conf) {
+      oldPage.call(this, setPage(conf))
+    }
+    Component = function (conf) {
+      oldComponent.call(this, setComponent(conf))
+    }
+  } catch (e) {
+    throw new Error('全局注册weup失败，请使用weup.page/weup.component')
   }
 }
 // 代理Page实例
-WEUP.Page = (pageConf) => {
-  return OLD_PAGE(setUse(pageConf))
+weup.page = (conf) => {
+  return Page(setPage(conf))
 }
 // 代理Page实例
-WEUP.Component = (componentConf) => {
-  return OLD_PAGE(setUse(componentConf, 'component'))
+weup.component = (conf) => {
+  return Component(setComponent(conf))
 }
 
-export default WEUP
+export default weup

@@ -1,0 +1,10 @@
+<view class="page">
+  <view class="title">weup基础模版</view>
+  <view class="msg">手机型号：{{phoneModel}}</view>
+  <view class="msg">{{componentPageData}}</view>
+  <view class="msg">{{behaviorData}}</view>
+  <view class="msg">{{useData}}</view>
+  <button class="button" hover-class="button-hover" catchtap="showTips">点我调用behavior中的showTips方法</button>
+  <button class="button" hover-class="button-hover" catchtap="showMoreTips">点我调用页面上的showMoreTips方法</button>
+  <button class="button" hover-class="button-hover" catchtap="backToIndex">点我后退到首页并携带数据</button>
+</view>

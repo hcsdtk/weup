@@ -9,7 +9,7 @@
  * 助手工具
  * 1、拓展Page实例支持 Mixin。
  * 2、全局store。
- * by chasen.huang 
+ * by Chasen 
  */
 import {
   isObject,

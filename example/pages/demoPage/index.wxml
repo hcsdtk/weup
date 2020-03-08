@@ -1,0 +1,8 @@
+<view class="page">
+  <view class="title">weup基础模版</view>
+  <view class="msg">手机型号：{{phoneModel}}</view>
+  <view class="msg">{{demoPageData}}</view>
+  <view class="msg">{{useData}}</view>
+  <button class="button" hover-class="button-hover" catchtap="globalEvent">调用use中的全局方法</button>
+  <button class="button" hover-class="button-hover" catchtap="backToIndex">点我后退到首页并携带数据</button>
+</view>

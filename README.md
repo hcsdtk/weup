@@ -17,9 +17,8 @@
 小程序开启 npm 模块。
 
 ```bash
-npm install --save weup
-or
-yarn add weup
+npm install --save weup # 或者：yarn add weup
+
 ```
 
 全局引入
@@ -45,4 +44,19 @@ import weup from 'weup'
 weup.component({
   ready() {}
 })
+```
+
+# 参考demo
+
+```bash
+git clone https://github.com/hcsdtk/weup.git
+
+# 开发者工具-导入项目-example
+
+# 安装
+yarn 
+
+# 开发者工具-工具-构建 npm
+
+
 ```

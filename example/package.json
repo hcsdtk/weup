@@ -9,6 +9,10 @@
   "author": "Chasen Huang",
   "license": "ISC",
   "dependencies": {
-    "weup": "^0.1.0"
+    "weup": "^0.1.2",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
+    "lodash.isempty": "^4.4.0"
   }
 }

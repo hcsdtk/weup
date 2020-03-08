@@ -1,9 +1,6 @@
 /**
  * 一些工具类
  */
-export const lodashGet = require('lodash.get')
-export const lodashSet = require('lodash.set')
-export const clonedeep = require('lodash.clonedeep')
 export const isEmpty = require('lodash.isempty')
 /**
  * 是否是数组

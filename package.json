@@ -1,6 +1,6 @@
 {
   "name": "weup",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Weapp native development enhancement library",
   "main": "lib/index.js",
   "directories": {
@@ -8,7 +8,10 @@
     "example": "example"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js "
+    "build": "webpack --config webpack.config.js",
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs",
+    "docs:deploy": "bash deploy.sh"
   },
   "repository": {
     "type": "git",
@@ -23,16 +26,14 @@
     "url": "https://github.com/hcsdtk/weup/issues",
     "email": "hcsdtk@sina.com"
   },
-  "homepage": "https://github.com/hcsdtk/weup#readme",
+  "homepage": "https://hcsdtk.github.io/weup/",
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",
+    "vuepress": "^1.3.1",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
-    "lodash.clonedeep": "^4.5.0",
-    "lodash.get": "^4.4.2",
-    "lodash.isempty": "^4.4.0",
-    "lodash.set": "^4.3.2"
+    "lodash.isempty": "^4.4.0"
   }
 }

@@ -36,13 +36,13 @@ weup.install()
 ```javascript
 // page.js
 import weup from 'weup'
-weup.Page({
+weup.page({
   onLoad() {}
 })
 
 // component.js
 import weup from 'weup'
-weup.Component({
+weup.component({
   ready() {}
 })
 ```
